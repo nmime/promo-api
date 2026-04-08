@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model PromoCode {
+  id              String       @id @default(uuid())
+  code            String       @unique
+  discount        Int
+  activationLimit Int
+  expiresAt       DateTime
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  activations     Activation[]
+
+  @@map("promo_codes")
+}
+
+model Activation {
+  id          String    @id @default(uuid())
+  email       String
+  promoCodeId String
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id])
+  createdAt   DateTime  @default(now())
+
+  @@unique([email, promoCodeId])
+  @@map("activations")
+}
